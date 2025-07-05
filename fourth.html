@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Responsive Quiz & Joke App</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: darkgray;
+    }
+
+    header, footer {
+      background: #333;
+      color: #fff;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    main {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      padding: 1rem;
+    }
+
+    .box {
+      background: gray;
+      padding: 1rem;
+      margin: 5rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+      max-width: 450px;
+      flex: 1 1 10px;
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      margin-top: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    label {
+      display: block;
+      margin: 8px 0;
+    }
+
+    fieldset {
+      border: none;
+      margin-bottom: 5px;
+    }
+    .joke-box {
+  max-width: 200px;
+  padding: 0.5rem;
+  margin: 0.5rem;
+  font-size: 12px;
+}
+
+.joke-box h2 {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+#joke {
+  font-size: 12px;
+  margin-top: 5px;
+}
+.joke-box {
+  max-width: 200px;
+  margin: 0.5rem auto;
+  font-size: 13px;
+  text-align: center;
+  background: none;
+  box-shadow: none;
+  padding: 0;
+  border: none;
+}
+
+
+
+    @media (max-width: 768px) {
+      main {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .box {
+        width: 90%;
+      }
+
+ 
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Quiz & Joke Web App</h1>
+  </header>
+
+  <main>
+    <!-- Quiz Section -->
+    <section class="box">
+      <h2>JavaScript Quiz</h2>
+      <form id="quiz-form">
+        <div id="quiz-container"></div>
+        <button type="button" onclick="submitQuiz()">Submit Quiz</button>
+        <button type="button" onclick="resetQuiz()">Reset</button>
+        <p id="quiz-result"></p>
+      </form>
+    </section>
+
+    <!-- Joke Section -->
+<section class="joke-box">
+  <h2>Need a Joke?</h2>
+  <button onclick="fetchJoke()">Get Joke</button>
+  <p id="joke" style="margin-top:10px;"></p>
+</section>
+
+  </main>
+
+  <footer>
+    <p>Developed by Surya• 2025</p>
+  </footer>
+
+  <script>
+    const questions = [
+
+      {
+        question: "Which method is used to output data to the console in JavaScript?",
+        options: ["print()", "log()", "console.log()", "echo()"],
+        answer: "console.log()"
+      },
+      {
+        question: "Which symbol is used for single-line comments in JavaScript?",
+        options: ["<!--", "//", "/*", "#"],
+        answer: "//"
+      },
+      {
+        question: "Which keyword is used to define a constant variable in JavaScript?",
+        options: ["var", "let", "const", "define"],
+        answer: "const"
+      },
+      {
+        question: "Which operator is used to compare both value and type in JavaScript?",
+        options: ["==", "!=", "===", "="],
+        answer: "==="
+      },
+      {
+        question: "What does the 'typeof' operator return for an array?",
+        options: ["array", "object", "list", "string"],
+        answer: "object"
+      }
+    ];
+
+    function loadQuiz() {
+      const quizContainer = document.getElementById('quiz-container');
+      quizContainer.innerHTML = '';
+      questions.forEach((q, index) => {
+        const fieldset = document.createElement('fieldset');
+        const legend = document.createElement('legend');
+        legend.textContent = `${index + 1}. ${q.question}`;
+        fieldset.appendChild(legend);
+
+        q.options.forEach(option => {
+          const label = document.createElement('label');
+          label.innerHTML = `
+            <input type="radio" name="q${index}" value="${option}" aria-label="${option}"> ${option}
+          `;
+          fieldset.appendChild(label);
+        });
+
+        quizContainer.appendChild(fieldset);
+      });
+      document.getElementById('quiz-result').innerText = '';
+    }
+
+    function submitQuiz() {
+      let score = 0;
+      questions.forEach((q, i) => {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        if (selected && selected.value === q.answer) {
+          score++;
+        }
+      });
+
+      document.getElementById('quiz-result').innerText = `You scored ${score} / ${questions.length}`;
+      // Disable inputs after submission
+      document.querySelectorAll('#quiz-form input').forEach(input => input.disabled = true);
+    }
+
+    function resetQuiz() {
+      loadQuiz();
+    }
+
+    function fetchJoke() {
+      fetch("https://official-joke-api.appspot.com/random_joke")
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById("joke").innerText = `${data.setup} 😂 ${data.punchline}`;
+        })
+        .catch(() => {
+          document.getElementById("joke").innerText = "Failed to load joke.";
+        });
+    }
+
+    window.onload = loadQuiz;
+  </script>
+
+</body>
+</html>
